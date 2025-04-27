@@ -1,0 +1,72 @@
+# Visit https://github.com/lowlighter/metrics#-documentation for full reference
+name: Metrics  # 设置 GitHub Actions 的工作流名称
+
+on:
+    # 定时触发器，每8小时更新一次
+    schedule: [{ cron: "0 */8 * * *" }]
+    # 允许手动触发工作流
+    workflow_dispatch:
+    # 在每次推送到 master 分支时触发
+    push: { branches: ["master"] }
+
+jobs:
+    github-metrics:
+        runs-on: ubuntu-latest  # 设置 GitHub Actions 运行的环境为 Ubuntu
+        permissions:
+            contents: write  # 给与权限来写入仓库内容
+
+        steps:
+            # 使用 lowlighter/metrics GitHub Action 来生成 GitHub Metrics
+            - uses: lowlighter/metrics@master
+              with:
+                  token: ${{ secrets.METRICS_TOKEN }}  # 使用 GitHub secret 中的 METRICS_TOKEN 作为认证
+
+                  # 以下是自定义的配置选项
+                  user: xiaohanpublic  # 设置要统计的 GitHub 用户名
+                  template: classic  # 使用 classic 模板样式
+                  base: header, activity, community, repositories, metadata  # 指定生成的基本部分
+                  base_hireable: yes  # 显示是否开放招聘的状态
+                  config_octicon: yes  # 启用 Octicon 图标
+                  config_timezone: Asia/Shanghai  # 设置时区为上海时间、
+
+                  # plugin_people: yes  # 启用用户相关的插件，例如统计用户的关注者和被关注者
+                  # plugin_people_limit: 24  # 设置 plugin_people 插件显示的用户限制数量为 24
+                  # plugin_people_size: 28  # 设置用户头像显示的大小为 28
+                  # plugin_people_types: followers, following  # 统计用户的关注者和被关注者
+
+                  # 插件相关配置
+                  plugin_achievements: yes  # 启用成就插件
+                  plugin_achievements_display: compact  # 设置成就插件为紧凑显示
+                  plugin_achievements_secrets: yes  # 显示成就的秘密成就
+                  plugin_achievements_threshold: A  # 设定显示的成就阈值为 A
+                  plugin_achievements_limit: 6  # 设置显示最多 6 个成就
+
+                  # plugin_calendar: yes  # 启用日历插件，用于显示贡献的日期
+                  # plugin_calendar_limit: 2  # 设置显示的日历插件数量限制为 2
+
+                  # 插件：年度和月度统计的日历
+                  plugin_isocalendar: yes  # 启用 ISO 日历插件
+                  plugin_isocalendar_duration: half-year  # 设置 ISO 日历显示为半年
+
+                  # plugin_introduction: yes  # 启用自我介绍插件，用于展示用户的自我介绍
+                  # plugin_introduction_title: yes  # 显示自我介绍插件的标题
+
+                  # 插件：编程语言统计
+                  plugin_languages: yes  # 启用语言统计插件
+                  plugin_languages_analysis_timeout: 15  # 分析超时时间设置为 15 秒
+                  plugin_languages_analysis_timeout_repositories: 7.5  # 仓库分析超时为 7.5 秒
+                  plugin_languages_categories: markup, programming  # 统计标记语言和编程语言
+                  plugin_languages_colors: github  # 使用 GitHub 的语言颜色
+                  plugin_languages_ignored: Mathematica, Jupyter Notebook, Starlark  # 忽略某些语言
+                  plugin_languages_limit: 8  # 显示最多 8 种语言
+                  plugin_languages_recent_categories: markup, programming  # 仅统计最近的标记语言和编程语言
+                  plugin_languages_recent_days: 14  # 统计最近 14 天的语言使用
+                  plugin_languages_recent_load: 300  # 加载 300 次最近的语言使用
+                  plugin_languages_sections: most-used  # 显示最常用的语言
+                  plugin_languages_threshold: 0%  # 统计的语言比例为 0% 及以上的语言
+
+                  # 插件：代码行数统计
+                  plugin_lines: yes  # 启用代码行数统计插件
+                  plugin_lines_history_limit: 1  # 仅显示 1 次历史记录
+                  plugin_lines_repositories_limit: 4  # 显示最多 4 个仓库的行数统计
+                  plugin_lines_sections: base  # 显示基础的代码行数统计部分
